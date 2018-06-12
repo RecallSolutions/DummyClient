@@ -61,21 +61,35 @@ class DummyType {
          * Get the map of objects corresponding to the given value in index.
          * @type {Map<number, DummyObject>>}
          */
-        obj.type.clearObjIndeces(obj);
+        obj.type.clearObjIndices(obj);
 
         let sub_index;
-        if (index.has(val)) {
-            sub_index = index.get(val);
+        if (index.has(val.valueOf())) {
+            sub_index = index.get(val.valueOf());
         } else {
             sub_index = new Map()
-            index.set(val, sub_index);
+            index.set(val.valueOf(), sub_index);
         }
         sub_index.set(obj.id, obj);
-        obj.indexees.push([index, val, sub_index]);
+        obj.indexees.push([index, val.valueOf(), sub_index]);
     }
 
     /**
+     * Create a new index, i.e. make it possible to search for objects of this type based on a property.
+     * If the index will be created on a simple property, that is
+     *      *) A primitive field
+     *      *) A reference (just the numeric id)
+     * The DO NOT use this method, use createBasicIndex(...).
      *
+     * The indexor must do the following:
+     *      0) Accept params index (the index) and obj (the object being indexed)
+     *      1) Clear existing indices for the object using obj.type.clearIndices(obj), to prevent redundant indices.
+     *      2) Find or create a sub index. That is, a map relating object ids to objects.
+     *         This sub index is stored in the main index by a key, which is the value being indexed upon.
+     *      3) This sub index must either be added to the main index, or updated with the new object.
+     *      4) Push the new index to the object.
+     *              Use the syntax obj.indexees.push([index, val, subIndex])
+     *              Where index is the main index, and val is the key relating index to subindex.
      * @param {string} name The unique identifier for this index.
      * @param {function(DummyObject, Map<*, Map<number, DummyObject>>):void} indexor The function responsible for indexing.
      */
@@ -100,7 +114,7 @@ class DummyType {
      * Clear any indeces of this object.
      *@type {DummyObject} obj
      */
-    clearObjIndeces(obj) {
+    clearObjIndices(obj) {
         obj.indexees.forEach(([index, val, subIndex]) => {
             subIndex.delete(obj.id);
             if (subIndex.size == 0) {
@@ -117,7 +131,7 @@ class DummyType {
         /*
         First, we should clear any indexes the object already has.
          */
-        this.clearObjIndeces(obj);
+        this.clearObjIndices(obj);
         /*
         Now go through our indexes, adding items.
          */
@@ -139,9 +153,9 @@ class DummyType {
         if (this.indexes.has(name)) {
             const index = this.indexes.get(name);
             //If the index does not have the requested value, return empty.
-            if (index.has(val)) {
+            if (index.has(val.valueOf())) {
                 //The index map contains ids and object. Filter only the objects.
-                return [...index.get(val)].map(([id, o]) => o);
+                return [...index.get(val.valueOf())].map(([id, o]) => o);
             } else {
                 return [];
             }
@@ -167,8 +181,8 @@ class DummyType {
              we must iterate through all values to check for matches.
              */
             [...index.keys()].forEach((val) => {
-                if (condition(val)) {
-                    matched.push(...[...index.get(val)].map(([id, o]) => o));
+                if (condition(val.valueOf())) {
+                    matched.push(...[...index.get(val.valueOf())].map(([id, o]) => o));
                 }
             });
             return matched;
@@ -191,7 +205,7 @@ class DummyType {
          */
         return new Promise((resolve, reject) =>
             this.searchIndex(name, val => {
-                return low <= val && high >= val
+                return low.valueOf() <= val.valueOf() && high.valueOf() >= val.valueOf()
             })
                 .then(s => {
                     resolve(s)
