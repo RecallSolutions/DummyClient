@@ -27,6 +27,10 @@ let API_PROXY;
  */
 let client;
 
+/**
+ * A registry of all types created.
+ */
+const TYPES_REGISTRY = new Map();
 
 /**
  * Initialize the dummy client.
@@ -64,20 +68,61 @@ exports.getClient = () => client;
  * @type {{primitive: function(): {get(*, *): *}, reference: function({type: *}): {type: *, get(*=, *=): *}}}
  */
 exports.propTypes = {
+    /**
+     * @return {{get(*, DummyObject): *}}
+     */
     primitive: () => ({
+        /**
+         *
+         * @template T
+         * @param {T} val
+         * @param {DummyObject} parent
+         * @return {T}
+         */
         get(val, parent) {
             return val;
         }
     }),
-
+    /**
+     *
+     * @param {DummyType} type
+     * @return {{type: DummyType, get(number, DummyObject): Promise<DummyObject, *>}}
+     */
     reference: ({type}) => (
         {
             type,
+            /**
+             *
+             * @param {number} id
+             * @param {DummyObject} parent
+             * @return {Promise<DummyObject, *>}
+             */
             async get(id, parent) {
                 return type.get(id, parent)
             }
         }
-    )
+    ),
+
+    /**
+     * In many cases, and object will reference many objects in a single field.
+     * For example, a month holding many days.
+     * This type takes in an array of ids, and returns a promise when all of them resolve.
+     *
+     * @param {DummyType} type
+     * @return {Promise<Promise<DummyObject,*>[]>}
+     */
+    referenceArray: ({type}) => ({
+        type,
+        /**
+         * Resolve all reference ids.
+         * @param ids
+         * @param parent {DummyObject}
+         * @return {Promise<Promise<DummyObject>[]>}
+         */
+        get(ids, parent) {
+            return Promise.all(ids.map(id => type.get(id, parent)));
+        }
+    })
 };
 
 
@@ -87,6 +132,8 @@ exports.propTypes = {
  * @param {string} endPoint
  * @return {DummyType}
  */
-exports.createType = (endPoint, typeMap) => {
-    return DummyType(typeMap, endPoint);
+exports.createType = (name, endPoint, typeMap) => {
+    const type = new DummyType(typeMap, endPoint);
+    TYPES_REGISTRY.set(name, type);
+    return type;
 };

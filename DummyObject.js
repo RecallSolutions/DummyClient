@@ -9,21 +9,37 @@ const index = require('./index');
  * @return {DummyObject}
  * @constructor
  */
-exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}) => ({
-    id,
-    type,
-    /** @type {DummyObject | undefined} **/
-    parent,
-    local,
+class DummyObject {
 
-    //The properties for this object, limited to those in the typemap.
-    saved: {},
-    updated: {},
+    constructor({id = undefined, type, parent = undefined, local = false}) {
+        this.id = id;
+        /** @type {DummyType} */
+        this.type = type;
+        /** @type {DummyObject | undefined} **/
+        this.parent = parent;
+        /** @type {boolean}*/
+        this.local = local;
 
-    //Subscriptions to this object. They will fire on every update, load, or set
-    //Subscribing objects must provide functions, accepting this object as a parameter.
-    //The object subscribing is used as a key.
-    subscriptions: new Map(),
+        //The properties for this object, limited to those in the typemap.
+        this.saved = {};
+        this.updated = {};
+
+        /**
+         * Subscriptions to this object. They will fire on every update, load, or set
+         * Subscribing objects must provide functions, accepting this object as a parameter.
+         * The object subscribing is used as a key.
+         * @type {Map<Object, function(DummyObject)>}
+         */
+        this.subscriptions = new Map();
+
+        /**
+         * An array of all maps currently holding indexes to this object.
+         * This is not normal form, but if this item is modified (by id) or deleted, it makes it easier to
+         * update indices.
+         * @type {[Map<*, Map<number, DummyObject>>, *, Map<number, DummyObject>][]}
+         */
+        this.indexees = [];
+    }
 
     /**
      * Returns the fully qualified network path for this object.
@@ -48,10 +64,12 @@ exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}
             path += `/${id}`;
         }
         return path;
-    },
+    };
+
     /**
      * Override updated, setting saved data to the parameter object.
      * @param {object} obj
+     * @return {DummyObject}
      */
     set(obj) {
         let filtered = {};
@@ -62,19 +80,49 @@ exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}
         });
         this.saved = {...this.saved, ...filtered};
         this.updated = {};
+        this.type.index(this);
         this.notify();
-    },
+        return this;
+    };
+
+    /**
+     * Resolve the updates with the saved data, updates overwrite saved in the returned read only copy.
+     * @return {{}}
+     */
     resolve() {
         return {...this.saved, ...this.updated}
-    },
-    async get(prop) {
+    };
+
+    /**
+     * Get a property.
+     * @param prop
+     * @return {Promise<DummyObject, *> | *}
+     */
+    get(prop) {
         return this.type.propMap[prop].get(this.resolve()[prop], this);
+    };
+
+    /**
+     * Not recommended. Returns the direct value with no processing,
+     * use only if sure it is okay.
+     * @param prop
+     * @return {*}
+     */
+    getRaw(prop){
+        return this.resolve()[prop];
     }
-    ,
+
+    /**
+     *
+     * @param obj The updated properties.
+     * @return {DummyObject}
+     */
     update(obj) {
         this.updated = {...this.updated, ...obj};
         this.notify();
-    },
+        return this;
+    };
+
     /**
      * Save the current state of this object to the server.
      * @return {Promise}
@@ -95,21 +143,24 @@ exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}
                     }
                 });
         });
-    },
+    };
 
     /**
      * Remove any changes made to this object, reverting to the saved version.
      * Notifies all subscribed objects.
+     * @return {DummyObject}
      */
     revert() {
         this.updated = {};
+        this.type.index(this);
         this.notify();
-    },
+        return this;
+    };
 
     /**
      * Loads data for this object from the server.
      * This will automatically overwrite local updates.
-     * @return {Promise}
+     * @return {Promise<DummyObject>}
      */
     load() {
         return new Promise((resolve, reject) => {
@@ -119,22 +170,24 @@ exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}
                     this.set(body.data);
                     this.id = body.id;
                     this.type.registry.set(this.id, this);
+                    this.type.index(this);
+                    this.notify();
                     resolve(this)
                 } else {
                     reject(err)
                 }
             })
         })
-    },
+    };
 
     /**
      * Subscribe to changes in this object.
      * @param {object} subscriber
-     * @param {() => void} subscription
+     * @param {function(DummyObject):void} subscription
      */
     subscribe(subscriber, subscription) {
         this.subscriptions.set(subscriber, subscription);
-    },
+    };
 
     /**
      * Notify all subscribing objects with this.
@@ -145,4 +198,6 @@ exports.DummyObject = ({id = undefined, type, parent = undefined, local = false}
             subscription(this);
         });
     }
-});
+}
+
+exports.DummyObject = DummyObject;
