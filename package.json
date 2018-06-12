@@ -1,0 +1,14 @@
+{
+  "name": "dummy-client",
+  "version": "0.9.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jay Mohile",
+  "license": "ISC",
+  "dependencies": {
+    "request-json": "^0.6.3"
+  }
+}
