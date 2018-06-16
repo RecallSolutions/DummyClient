@@ -51,17 +51,17 @@ class DummyObject {
 
         //If necessary, append this path onto that of the parent,
         //otherwise, assume this is root.
-        if (parent) {
-            path = parent.getPath();
+        if (this.parent) {
+            path = this.parent.getPath();
         } else {
             path = index.getProxy();
         }
 
-        path += type.endPoint;
+        path += this.type.endPoint;
         //Only add on a unique id if this is not a "local only" item,
         //that is, the server knows about it.
-        if (!local) {
-            path += `/${id}`;
+        if (!this.local) {
+            path += `/${this.id}`;
         }
         return path;
     };
@@ -72,13 +72,25 @@ class DummyObject {
      * @return {DummyObject}
      */
     set(obj) {
-        let filtered = {};
-        Object.keys(this.type.propMap).forEach(prop => {
-            if (obj[prop]) {
-                filtered[prop] = obj[prop];
+        Object.keys(this.type.propMap).forEach((prop, func) => {
+            if (obj[prop] != undefined) {
+                this.saved[prop] = obj[prop]
+                /*
+                If we are setting to a reference type, then
+                we must be able to respond to changes in the reference.
+                For example, if we reference an object that gets deleted,
+                we must reload this object,
+                 */
+                if (this.type.propMap[prop].reference && this.type.propMap[prop].subscribed) {
+                    this.get(prop)
+                        .then(object => {
+                            object.subscribe(this, (updated) => {
+                                this.load();
+                            });
+                        })
+                }
             }
         });
-        this.saved = {...this.saved, ...filtered};
         this.updated = {};
         this.type.index(this);
         this.notify();
@@ -108,7 +120,7 @@ class DummyObject {
      * @param prop
      * @return {*}
      */
-    getRaw(prop){
+    getRaw(prop) {
         return this.resolve()[prop];
     }
 
@@ -129,19 +141,18 @@ class DummyObject {
      */
     save() {
         return new Promise((resolve, reject) => {
-            //Post this object based on the resolved version.
-            index.getClient()
-                .post(this.getPath(), this.resolve(), (err, res, body) => {
-                    //Only successful if there wasn't an error.
-                    if (!err) {
-                        //The server may have requested a changed id.
-                        this.id = body.id || this.id;
-                        this.load()
-                            .then(resolve);
-                    } else {
-                        reject(err);
-                    }
-                });
+            //Post or put this object based on the resolved version.
+            index.getClient().post(this.getPath(), this.resolve(), (err, res, body) => {
+                //Only successful if there wasn't an error.
+                if (!err) {
+                    //The server may have requested a changed id.
+                    this.id = body.id || this.id;
+                    this.load()
+                        .then(resolve);
+                } else {
+                    reject(err);
+                }
+            });
         });
     };
 
@@ -164,14 +175,42 @@ class DummyObject {
      */
     load() {
         return new Promise((resolve, reject) => {
+            /*
+            Send a get request to the endpoint, and update this item with the returned data.
+             */
             index.getClient().get(this.getPath(), (err, res, body) => {
                 if (!err) {
+                    /*
+                    Remove this item from the registry, since its id may have changed.
+                    In reality we should only do this if the id has been set...but this will enforce proper API practices.
+                     */
                     this.type.registry.delete(this.id);
+                    /*
+                    Send the new data to the set method, where it will become the saved data.
+                    If there is extraneous information, it will be filtered there.
+                     */
                     this.set(body.data);
+                    /*
+                    The server may request the object to update its id.
+                    For example, if this is a new object.
+                     */
                     this.id = body.id;
+                    /*
+                    Add this back to the registry with the updated (or unchanged) id.
+                     */
                     this.type.registry.set(this.id, this);
+                    /*
+                    Index this object as needed.
+                    We rerun the index because now information may have changed.
+                     */
                     this.type.index(this);
+                    /*
+                    Subscribed objects need to know of the changes.
+                     */
                     this.notify();
+                    /*
+                    Return the updated object. We send back object to allow chaining.
+                     */
                     resolve(this)
                 } else {
                     reject(err)
@@ -179,6 +218,33 @@ class DummyObject {
             })
         })
     };
+
+    del() {
+        return new Promise((resolve, reject) => {
+            index.getClient().del(this.getPath(), (err, res, body) => {
+                if (!err) {
+                    /*
+                    If this has been deleted, we must
+                    clear any index references to this object,
+                    and notify any subscribers.
+                     */
+                    this.type.clearObjIndices(this);
+                    this.notify();
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
+        });
+    }
+
+    dispatch(name, data = {}) {
+        if (this.type.actions.has(name)) {
+            index.getClient().post(this.getPath() + this.type.actions.get(name), data, (err, res, body) => {
+                this.load();
+            });
+        }
+    }
 
     /**
      * Subscribe to changes in this object.
@@ -194,6 +260,9 @@ class DummyObject {
      * Subscribed objects supply a function, which will be called.
      */
     notify() {
+        /*
+        We iterate through the subscribing functions, notifying each of them.
+         */
         [...this.subscriptions].forEach(([subscribed, subscription]) => {
             subscription(this);
         });

@@ -48,6 +48,19 @@ class DummyType {
          * @type {Map<string, function(DummyObject, Map<*, Map<number, DummyObject>>):void>}
          */
         this.indexors = new Map();
+
+        /**
+         * Actions are network operations this object is capable of performing, outside of usual crud.
+         * Each action is a string beginning with a /, corresponding to a rest endpoint.
+         * Posting to this endpoint will trigger an action.
+         *
+         * @example
+         * '/optimize'
+         *
+         * This map holds names for the actions, linked to the action endpoints.
+         * @type {Map<string, string>}
+         */
+        this.actions = new Map();
     }
 
     /**
@@ -72,6 +85,10 @@ class DummyType {
         }
         sub_index.set(obj.id, obj);
         obj.indexees.push([index, val.valueOf(), sub_index]);
+    }
+
+    createAction(name, endpoint){
+        this.actions.set(name, endpoint);
     }
 
     /**

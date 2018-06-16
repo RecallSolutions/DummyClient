@@ -22,7 +22,7 @@ const BASE_TYPE = Dummy.createType('base', '/base', {
 BASE_TYPE.createBasicIndex('num');
 
 //Create many items to test scalability of search.
-for(let x = 1; x < 100; x++){
+for (let x = 1; x < 100; x++) {
     BASE_TYPE.createObject(x, undefined, {num: x});
 }
 
@@ -52,7 +52,6 @@ CLASS_TYPE.searchIndexRange('date', new Date('2018'), new Date('2020'))
                 console.dir(p);
             })
     });
-let y = 1;
 
 //Demonstrates that this approach is scalable with large data sets.
 BASE_TYPE.searchIndexRange('num', 0, 1000000)

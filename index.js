@@ -86,11 +86,14 @@ exports.propTypes = {
     /**
      *
      * @param {DummyType} type
-     * @return {{type: DummyType, get(number, DummyObject): Promise<DummyObject, *>}}
+     * @param {boolean} subscribed
+     * @return {{type: DummyType, subscribed: boolean, get(number, DummyObject): Promise<DummyObject, *>}}
      */
-    reference: ({type}) => (
+    reference: ({type, subscribed = false}) => (
         {
+            reference: true,
             type,
+            subscribed,
             /**
              *
              * @param {number} id
