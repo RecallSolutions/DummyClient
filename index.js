@@ -100,7 +100,7 @@ exports.propTypes = {
              * @param {DummyObject} parent
              * @return {Promise<DummyObject, *>}
              */
-            async get(id, parent) {
+            async get(id, parent = undefined) {
                 return type.get(id, parent)
             }
         }
@@ -122,7 +122,7 @@ exports.propTypes = {
          * @param parent {DummyObject}
          * @return {Promise<Promise<DummyObject>[]>}
          */
-        get(ids, parent) {
+        get(ids, parent = undefined) {
             return Promise.all(ids.map(id => type.get(id, parent)));
         }
     })

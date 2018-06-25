@@ -11,12 +11,15 @@ const index = require('./index');
  */
 class DummyObject {
 
-    constructor({id = undefined, type, parent = undefined, local = false}) {
+    constructor({id = undefined, version = 0, type, parent = undefined, local = false}) {
         this.id = id;
+        this.version = version;
         /** @type {DummyType} */
         this.type = type;
-        /** @type {DummyObject | undefined} **/
-        this.parent = parent;
+        if (parent) {
+            /** @type {DummyObject | undefined} **/
+            this.setParent(parent);
+        }
         /** @type {boolean}*/
         this.local = local;
 
@@ -195,6 +198,7 @@ class DummyObject {
                     For example, if this is a new object.
                      */
                     this.id = body.id;
+                    this.version = body.version;
                     /*
                     Add this back to the registry with the updated (or unchanged) id.
                      */
@@ -244,6 +248,17 @@ class DummyObject {
                 this.load();
             });
         }
+    }
+
+    /**
+     *
+     * @param {DummyObject} parent
+     */
+    setParent(parent) {
+        this.parent = parent;
+        parent.subscribe(this, updated => {
+            this.load();
+        });
     }
 
     /**

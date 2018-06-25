@@ -272,6 +272,9 @@ class DummyType {
     get(id, parent) {
         return new Promise((resolve, reject) => {
             if (this.registry.has(id)) {
+                if(parent){
+                    this.registry.get(id).setParent(parent);
+                }
                 resolve(this.registry.get(id));
             } else {
                 let obj = this.createObject(id, parent);
