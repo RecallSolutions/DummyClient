@@ -152,7 +152,9 @@ var DummyObject = function () {
          * @return {Promise<DummyObject, *> | *}
          */
         value: function get(prop) {
-            return this.type.propMap[prop].get(this.resolve()[prop], this);
+            var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this;
+
+            return this.type.propMap[prop].get(this.resolve()[prop], parent);
         }
     }, {
         key: "getRaw",
