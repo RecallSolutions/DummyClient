@@ -9,6 +9,7 @@
   "author": "Jay Mohile",
   "license": "ISC",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "request-json": "^0.6.3"
   },
   "babel": {

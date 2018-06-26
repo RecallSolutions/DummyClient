@@ -5,6 +5,7 @@
 
 // noinspection Annotator
 const request = require('request-json');
+require('babel-polyfill');
 /*
 Import Type and Object, separated into modules for scalability.
 We export them to make them accessible through a single outside ui.
