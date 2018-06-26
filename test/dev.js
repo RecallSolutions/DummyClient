@@ -4,9 +4,10 @@ const DTypes = Dummy.propTypes;
 Dummy.init('http://localhost:3000');
 
 
-const TEACHER_TYPE = Dummy.createType('teacher', '/teacher', {
+const TEACHER_TYPE = Dummy.createType('teacher', '/teacher');
+TEACHER_TYPE.setPropMap({
     name: DTypes.primitive(),
-});
+})
 
 const CLASS_TYPE = Dummy.createType('class', '/class', {
     name: DTypes.primitive(),

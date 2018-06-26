@@ -411,6 +411,16 @@ var DummyType = function () {
                 }
             });
         }
+
+        /**
+         * Set a prop map
+         */
+
+    }, {
+        key: "setPropMap",
+        value: function setPropMap(propMap) {
+            this.propMap = propMap;
+        }
     }], [{
         key: "BasicIndexor",
         value: function BasicIndexor(val, obj, index) {
