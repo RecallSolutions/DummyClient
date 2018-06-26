@@ -288,6 +288,13 @@ class DummyType {
             }
         })
     }
+
+    /**
+     * Set a prop map
+     */
+    setPropMap(propMap){
+        this.propMap = propMap;
+    }
 }
 
 exports.DummyType = DummyType;
