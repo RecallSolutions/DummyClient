@@ -113,8 +113,8 @@ class DummyObject {
      * @param prop
      * @return {Promise<DummyObject, *> | *}
      */
-    get(prop) {
-        return this.type.propMap[prop].get(this.resolve()[prop], this);
+    get(prop, parent = this) {
+        return this.type.propMap[prop].get(this.resolve()[prop], parent);
     };
 
     /**
