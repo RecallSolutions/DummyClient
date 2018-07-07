@@ -82,14 +82,18 @@ class DummyObject {
                 If we are setting to a reference type, then
                 we must be able to respond to changes in the reference.
                 For example, if we reference an object that gets deleted,
-                we must reload this object,
+                we must reload this object.
+
+                Also, this adds the item to its cache.
                  */
-                if (this.type.propMap[prop].reference && this.type.propMap[prop].subscribed) {
+                if (this.type.propMap[prop].reference) {
                     this.get(prop)
                         .then(object => {
-                            object.subscribe(this, (updated) => {
-                                this.load();
-                            });
+                            if (this.type.propMap[prop].subscribed) {
+                                object.subscribe(this, (updated) => {
+                                    this.load();
+                                });
+                            }
                         })
                 }
             }
