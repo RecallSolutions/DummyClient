@@ -89,6 +89,7 @@ class DummyObject {
                 if (this.type.propMap[prop].reference) {
                     this.get(prop)
                         .then(object => {
+                            object.type.index(object);
                             if (this.type.propMap[prop].subscribed) {
                                 object.subscribe(this, (updated) => {
                                     this.load();
