@@ -151,6 +151,7 @@ exports.propTypes = {
   referenceArray: function referenceArray(_ref3) {
     var type = _ref3.type;
     return {
+      referenceArray: true,
       type: type,
       /**
        * Resolve all reference ids.
@@ -180,3 +181,4 @@ exports.createType = function (name, endPoint, typeMap) {
   TYPES_REGISTRY.set(name, type);
   return type;
 };
+//# sourceMappingURL=index.js.map

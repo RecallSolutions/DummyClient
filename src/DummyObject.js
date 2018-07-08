@@ -96,6 +96,18 @@ class DummyObject {
                                 });
                             }
                         })
+                } else if (this.type.propMap[prop].referenceArray) {
+                    this.get(prop)
+                        .then(objectArray => {
+                            objectArray.forEach(o => {
+                                o.type.index(o);
+                                if (this.type.propMap[prop].subscribed) {
+                                    o.subscribe(this, (updated) => {
+                                        this.load();//Trigger an update
+                                    });
+                                }
+                            })
+                        })
                 }
             }
         });

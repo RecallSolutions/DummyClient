@@ -115,12 +115,27 @@ var DummyObject = function () {
                     If we are setting to a reference type, then
                     we must be able to respond to changes in the reference.
                     For example, if we reference an object that gets deleted,
-                    we must reload this object,
+                    we must reload this object.
+                      Also, this adds the item to its cache.
                      */
-                    if (_this.type.propMap[prop].reference && _this.type.propMap[prop].subscribed) {
+                    if (_this.type.propMap[prop].reference) {
                         _this.get(prop).then(function (object) {
-                            object.subscribe(_this, function (updated) {
-                                _this.load();
+                            object.type.index(object);
+                            if (_this.type.propMap[prop].subscribed) {
+                                object.subscribe(_this, function (updated) {
+                                    _this.load();
+                                });
+                            }
+                        });
+                    } else if (_this.type.propMap[prop].referenceArray) {
+                        _this.get(prop).then(function (objectArray) {
+                            objectArray.forEach(function (o) {
+                                o.type.index(o);
+                                if (_this.type.propMap[prop].subscribed) {
+                                    o.subscribe(_this, function (updated) {
+                                        _this.load(); //Trigger an update
+                                    });
+                                }
                             });
                         });
                     }
@@ -371,3 +386,4 @@ var DummyObject = function () {
 }();
 
 exports.DummyObject = DummyObject;
+//# sourceMappingURL=DummyObject.js.map

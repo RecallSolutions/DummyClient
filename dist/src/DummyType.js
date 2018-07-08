@@ -446,3 +446,4 @@ var DummyType = function () {
 }();
 
 exports.DummyType = DummyType;
+//# sourceMappingURL=DummyType.js.map

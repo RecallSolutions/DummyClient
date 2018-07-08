@@ -116,6 +116,7 @@ exports.propTypes = {
      * @return {Promise<Promise<DummyObject,*>[]>}
      */
     referenceArray: ({type}) => ({
+        referenceArray: true,
         type,
         /**
          * Resolve all reference ids.
