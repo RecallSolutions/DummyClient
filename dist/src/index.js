@@ -98,16 +98,20 @@ exports.propTypes = {
    *
    * @param {DummyType} type
    * @param {boolean} subscribed
+   * @param {boolean} ignoreParent
    * @return {{type: DummyType, subscribed: boolean, get(number, DummyObject): Promise<DummyObject, *>}}
    */
   reference: function reference(_ref) {
     var type = _ref.type,
         _ref$subscribed = _ref.subscribed,
-        subscribed = _ref$subscribed === undefined ? false : _ref$subscribed;
+        subscribed = _ref$subscribed === undefined ? false : _ref$subscribed,
+        _ref$ignoreParent = _ref.ignoreParent,
+        ignoreParent = _ref$ignoreParent === undefined ? false : _ref$ignoreParent;
     return {
       reference: true,
       type: type,
       subscribed: subscribed,
+      ignoreParent: ignoreParent,
       /**
        *
        * @param {number} id
@@ -121,7 +125,7 @@ exports.propTypes = {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  return _context.abrupt('return', type.get(id, parent));
+                  return _context.abrupt('return', type.get(id, this.ignoreParent ? undefined : parent));
 
                 case 1:
                 case 'end':
@@ -146,24 +150,33 @@ exports.propTypes = {
    * This type takes in an array of ids, and returns a promise when all of them resolve.
    *
    * @param {DummyType} type
+   * @param {boolean} ignoreParent
    * @return {Promise<Promise<DummyObject,*>[]>}
    */
   referenceArray: function referenceArray(_ref3) {
-    var type = _ref3.type;
+    var type = _ref3.type,
+        _ref3$child = _ref3.child,
+        child = _ref3$child === undefined ? undefined : _ref3$child,
+        _ref3$ignoreParent = _ref3.ignoreParent,
+        ignoreParent = _ref3$ignoreParent === undefined ? false : _ref3$ignoreParent;
     return {
       referenceArray: true,
       type: type,
+      child: child,
+      ignoreParent: ignoreParent,
       /**
        * Resolve all reference ids.
        * @param ids
        * @param parent {DummyObject}
        * @return {Promise<Promise<DummyObject>[]>}
-       */
+       **/
       get: function get(ids) {
+        var _this = this;
+
         var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
 
         return Promise.all(ids.map(function (id) {
-          return type.get(id, parent);
+          return type.get(id, _this.ignoreParent ? undefined : parent);
         }));
       }
     };

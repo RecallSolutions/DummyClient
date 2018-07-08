@@ -88,13 +88,15 @@ exports.propTypes = {
      *
      * @param {DummyType} type
      * @param {boolean} subscribed
+     * @param {boolean} ignoreParent
      * @return {{type: DummyType, subscribed: boolean, get(number, DummyObject): Promise<DummyObject, *>}}
      */
-    reference: ({type, subscribed = false}) => (
+    reference: ({type, subscribed = false, ignoreParent = false}) => (
         {
             reference: true,
             type,
             subscribed,
+            ignoreParent,
             /**
              *
              * @param {number} id
@@ -102,7 +104,7 @@ exports.propTypes = {
              * @return {Promise<DummyObject, *>}
              */
             async get(id, parent = undefined) {
-                return type.get(id, parent)
+                return type.get(id, this.ignoreParent ? undefined : parent)
             }
         }
     ),
@@ -113,19 +115,22 @@ exports.propTypes = {
      * This type takes in an array of ids, and returns a promise when all of them resolve.
      *
      * @param {DummyType} type
+     * @param {boolean} ignoreParent
      * @return {Promise<Promise<DummyObject,*>[]>}
      */
-    referenceArray: ({type}) => ({
+    referenceArray: ({type, child = undefined, ignoreParent= false}) => ({
         referenceArray: true,
         type,
+        child,
+        ignoreParent,
         /**
          * Resolve all reference ids.
          * @param ids
          * @param parent {DummyObject}
          * @return {Promise<Promise<DummyObject>[]>}
-         */
+         **/
         get(ids, parent = undefined) {
-            return Promise.all(ids.map(id => type.get(id, parent)));
+            return Promise.all(ids.map(id => type.get(id, this.ignoreParent ? undefined: parent)));
         }
     })
 };
