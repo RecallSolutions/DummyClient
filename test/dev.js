@@ -1,4 +1,4 @@
-const Dummy = require("../bin/index");
+const Dummy = require("../dist/src/index");
 const DTypes = Dummy.propTypes;
 
 Dummy.init('http://localhost:3000');
