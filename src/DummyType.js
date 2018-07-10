@@ -151,11 +151,16 @@ class DummyType {
         this.clearObjIndices(obj);
         /*
         Now go through our indexes, adding items.
+        Indexing only makes sense if this object has loaded and has data.
+        If it has not, then load it. The load method automatically indexes.
          */
-        obj.load()
-            .then(() => this.indexors.forEach(((indexor, name) => {
+        if(obj.hasLoaded){
+            () => this.indexors.forEach(((indexor, name) => {
                 indexor(obj, this.indexes.get(name))
-            })));
+            }));
+        }else{
+            obj.load()
+        }
     }
 
     /**

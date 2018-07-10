@@ -23,6 +23,10 @@ class DummyObject {
         /** @type {boolean}*/
         this.local = local;
 
+        /**Whether this has loaded (even once)
+         * @type {boolean}*/
+        this.hasLoaded = false
+
         //The properties for this object, limited to those in the typemap.
         this.saved = {};
         this.updated = {};
@@ -232,6 +236,7 @@ class DummyObject {
                     /*
                     Return the updated object. We send back object to allow chaining.
                      */
+                    this.hasLoaded = true;
                     resolve(this)
                 } else {
                     reject(err)

@@ -171,12 +171,18 @@ var DummyType = function () {
             this.clearObjIndices(obj);
             /*
             Now go through our indexes, adding items.
+            Indexing only makes sense if this object has loaded and has data.
+            If it has not, then load it. The load method automatically indexes.
              */
-            obj.load().then(function () {
-                return _this.indexors.forEach(function (indexor, name) {
-                    indexor(obj, _this.indexes.get(name));
+            if (obj.hasLoaded) {
+                (function () {
+                    return _this.indexors.forEach(function (indexor, name) {
+                        indexor(obj, _this.indexes.get(name));
+                    });
                 });
-            });
+            } else {
+                obj.load();
+            }
         }
 
         /**

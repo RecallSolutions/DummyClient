@@ -47,6 +47,10 @@ var DummyObject = function () {
         /** @type {boolean}*/
         this.local = local;
 
+        /**Whether this has loaded (even once)
+         * @type {boolean}*/
+        this.hasLoaded = false;
+
         //The properties for this object, limited to those in the typemap.
         this.saved = {};
         this.updated = {};
@@ -288,6 +292,7 @@ var DummyObject = function () {
                         /*
                         Return the updated object. We send back object to allow chaining.
                          */
+                        _this3.hasLoaded = true;
                         resolve(_this3);
                     } else {
                         reject(err);
