@@ -87,7 +87,7 @@ class DummyType {
         obj.indexees.push([index, val.valueOf(), sub_index]);
     }
 
-    createAction(name, endpoint){
+    createAction(name, endpoint) {
         this.actions.set(name, endpoint);
     }
 
@@ -152,9 +152,10 @@ class DummyType {
         /*
         Now go through our indexes, adding items.
          */
-        this.indexors.forEach(((indexor, name) => {
-            indexor(obj, this.indexes.get(name))
-        }));
+        obj.load()
+            .then(() => this.indexors.forEach(((indexor, name) => {
+                indexor(obj, this.indexes.get(name))
+            })));
     }
 
     /**
@@ -272,7 +273,7 @@ class DummyType {
     get(id, parent) {
         return new Promise((resolve, reject) => {
             if (this.registry.has(id)) {
-                if(parent){
+                if (parent) {
                     this.registry.get(id).setParent(parent);
                 }
                 resolve(this.registry.get(id));
@@ -292,7 +293,7 @@ class DummyType {
     /**
      * Set a prop map
      */
-    setPropMap(propMap){
+    setPropMap(propMap) {
         this.propMap = propMap;
     }
 }

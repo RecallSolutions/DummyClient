@@ -172,8 +172,10 @@ var DummyType = function () {
             /*
             Now go through our indexes, adding items.
              */
-            this.indexors.forEach(function (indexor, name) {
-                indexor(obj, _this.indexes.get(name));
+            obj.load().then(function () {
+                return _this.indexors.forEach(function (indexor, name) {
+                    indexor(obj, _this.indexes.get(name));
+                });
             });
         }
 
