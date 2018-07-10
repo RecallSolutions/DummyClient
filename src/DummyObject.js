@@ -63,7 +63,6 @@ class DummyObject {
         } else {
             path = index.getProxy();
         }
-
         path += this.type.endPoint;
         //Only add on a unique id if this is not a "local only" item,
         //that is, the server knows about it.
@@ -82,37 +81,37 @@ class DummyObject {
         Object.keys(this.type.propMap).forEach((prop, func) => {
             if (obj[prop] != undefined) {
                 this.saved[prop] = obj[prop]
-                /*
-                If we are setting to a reference type, then
-                we must be able to respond to changes in the reference.
-                For example, if we reference an object that gets deleted,
-                we must reload this object.
-
-                Also, this adds the item to its cache.
-                 */
-                if (this.type.propMap[prop].reference) {
-                    this.get(prop)
-                        .then(object => {
-                            object.type.index(object);
-                            if (this.type.propMap[prop].subscribed) {
-                                object.subscribe(this, (updated) => {
-                                    this.load();
-                                });
-                            }
-                        })
-                } else if (this.type.propMap[prop].referenceArray) {
-                    this.get(prop)
-                        .then(objectArray => {
-                            objectArray.forEach(o => {
-                                o.type.index(o);
-                                if (this.type.propMap[prop].subscribed) {
-                                    o.subscribe(this, (updated) => {
-                                        this.load();//Trigger an update
-                                    });
-                                }
-                            })
-                        })
-                }
+                // /*
+                // If we are setting to a reference type, then
+                // we must be able to respond to changes in the reference.
+                // For example, if we reference an object that gets deleted,
+                // we must reload this object.
+                //
+                // Also, this adds the item to its cache.
+                //  */
+                // if (this.type.propMap[prop].reference) {
+                //     this.get(prop)
+                //         .then(object => {
+                //             object.type.index(object);
+                //             if (this.type.propMap[prop].subscribed) {
+                //                 object.subscribe(this, (updated) => {
+                //                     this.load();
+                //                 });
+                //             }
+                //         })
+                // } else if (this.type.propMap[prop].referenceArray) {
+                //     this.get(prop)
+                //         .then(objectArray => {
+                //             objectArray.forEach(o => {
+                //                 o.type.index(o);
+                //                 if (this.type.propMap[prop].subscribed) {
+                //                     o.subscribe(this, (updated) => {
+                //                         this.load();//Trigger an update
+                //                     });
+                //                 }
+                //             })
+                //         })
+                // }
             }
         });
         this.updated = {};
