@@ -83,7 +83,7 @@ class DummyType {
             sub_index = new Map()
             index.set(val.valueOf(), sub_index);
         }
-        sub_index.set(obj.id, obj);
+        sub_index.set(obj.id.valueOf(), obj);
         obj.indexees.push([index, val.valueOf(), sub_index]);
     }
 
@@ -138,6 +138,7 @@ class DummyType {
                 index.delete(val);
             }
         });
+        obj.indexees = [];
     }
 
     /**
