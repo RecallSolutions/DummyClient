@@ -1,6 +1,6 @@
 {
   "name": "dummy-client",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
