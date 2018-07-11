@@ -203,6 +203,7 @@ class DummyObject {
              */
             index.getClient().get(this.getPath(), (err, res, body) => {
                 if (!err) {
+                    this.hasLoaded = true;
                     /*
                     Remove this item from the registry, since its id may have changed.
                     In reality we should only do this if the id has been set...but this will enforce proper API practices.
@@ -235,7 +236,6 @@ class DummyObject {
                     /*
                     Return the updated object. We send back object to allow chaining.
                      */
-                    this.hasLoaded = true;
                     resolve(this)
                 } else {
                     reject(err)

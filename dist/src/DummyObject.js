@@ -262,6 +262,7 @@ var DummyObject = function () {
                  */
                 index.getClient().get(_this3.getPath(), function (err, res, body) {
                     if (!err) {
+                        _this3.hasLoaded = true;
                         /*
                         Remove this item from the registry, since its id may have changed.
                         In reality we should only do this if the id has been set...but this will enforce proper API practices.
@@ -294,7 +295,6 @@ var DummyObject = function () {
                         /*
                         Return the updated object. We send back object to allow chaining.
                          */
-                        _this3.hasLoaded = true;
                         resolve(_this3);
                     } else {
                         reject(err);
