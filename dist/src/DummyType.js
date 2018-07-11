@@ -175,10 +175,8 @@ var DummyType = function () {
             If it has not, then load it. The load method automatically indexes.
              */
             if (obj.hasLoaded) {
-                (function () {
-                    return _this.indexors.forEach(function (indexor, name) {
-                        indexor(obj, _this.indexes.get(name));
-                    });
+                this.indexors.forEach(function (indexor, name) {
+                    indexor(obj, _this.indexes.get(name));
                 });
             } else {
                 obj.load();

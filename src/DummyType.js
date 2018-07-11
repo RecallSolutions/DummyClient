@@ -155,7 +155,7 @@ class DummyType {
         If it has not, then load it. The load method automatically indexes.
          */
         if(obj.hasLoaded){
-            () => this.indexors.forEach(((indexor, name) => {
+            this.indexors.forEach(((indexor, name) => {
                 indexor(obj, this.indexes.get(name))
             }));
         }else{
