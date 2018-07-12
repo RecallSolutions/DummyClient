@@ -91,12 +91,13 @@ exports.propTypes = {
      * @param {boolean} ignoreParent
      * @return {{type: DummyType, subscribed: boolean, get(number, DummyObject): Promise<DummyObject, *>}}
      */
-    reference: ({type, subscribed = false, ignoreParent = false}) => (
+    reference: ({type, subscribed = false, ignoreParent = false, load = false}) => (
         {
             reference: true,
             type,
             subscribed,
             ignoreParent,
+            load,
             /**
              *
              * @param {number} id
@@ -118,11 +119,12 @@ exports.propTypes = {
      * @param {boolean} ignoreParent
      * @return {Promise<Promise<DummyObject,*>[]>}
      */
-    referenceArray: ({type, child = undefined, ignoreParent= false}) => ({
+    referenceArray: ({type, child = undefined, ignoreParent= false, load = false}) => ({
         referenceArray: true,
         type,
         child,
         ignoreParent,
+        load,
         /**
          * Resolve all reference ids.
          * @param ids

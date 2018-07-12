@@ -106,12 +106,15 @@ exports.propTypes = {
         _ref$subscribed = _ref.subscribed,
         subscribed = _ref$subscribed === undefined ? false : _ref$subscribed,
         _ref$ignoreParent = _ref.ignoreParent,
-        ignoreParent = _ref$ignoreParent === undefined ? false : _ref$ignoreParent;
+        ignoreParent = _ref$ignoreParent === undefined ? false : _ref$ignoreParent,
+        _ref$load = _ref.load,
+        load = _ref$load === undefined ? false : _ref$load;
     return {
       reference: true,
       type: type,
       subscribed: subscribed,
       ignoreParent: ignoreParent,
+      load: load,
       /**
        *
        * @param {number} id
@@ -158,12 +161,15 @@ exports.propTypes = {
         _ref3$child = _ref3.child,
         child = _ref3$child === undefined ? undefined : _ref3$child,
         _ref3$ignoreParent = _ref3.ignoreParent,
-        ignoreParent = _ref3$ignoreParent === undefined ? false : _ref3$ignoreParent;
+        ignoreParent = _ref3$ignoreParent === undefined ? false : _ref3$ignoreParent,
+        _ref3$load = _ref3.load,
+        load = _ref3$load === undefined ? false : _ref3$load;
     return {
       referenceArray: true,
       type: type,
       child: child,
       ignoreParent: ignoreParent,
+      load: load,
       /**
        * Resolve all reference ids.
        * @param ids

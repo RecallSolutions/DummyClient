@@ -113,7 +113,16 @@ var DummyObject = function () {
 
             Object.keys(this.type.propMap).forEach(function (prop, func) {
                 if (obj[prop] != undefined) {
+                    var mappedProp = _this.type.propMap[prop];
                     _this.saved[prop] = obj[prop];
+
+                    //Special actions may be needed to properly manage referenced objects.
+                    if (mappedProp.reference || mappedProp.referenceArray) {
+                        //The refernce may request that it is loaded.
+                        if (mappedProp.load) {
+                            mappedProp.get(obj[prop], _this);
+                        }
+                    }
                     // /*
                     // If we are setting to a reference type, then
                     // we must be able to respond to changes in the reference.
