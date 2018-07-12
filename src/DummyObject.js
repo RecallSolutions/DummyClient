@@ -286,9 +286,9 @@ class DummyObject {
      */
     setParent(parent) {
         this.parent = parent;
-        parent.subscribe(this, updated => {
-            this.load();
-        });
+        // parent.subscribe(this, updated => {
+        //     this.load();
+        // });
     }
 
     /**

@@ -355,12 +355,10 @@ var DummyObject = function () {
     }, {
         key: "setParent",
         value: function setParent(parent) {
-            var _this6 = this;
-
             this.parent = parent;
-            parent.subscribe(this, function (updated) {
-                _this6.load();
-            });
+            // parent.subscribe(this, updated => {
+            //     this.load();
+            // });
         }
 
         /**
@@ -383,7 +381,7 @@ var DummyObject = function () {
          * Subscribed objects supply a function, which will be called.
          */
         value: function notify() {
-            var _this7 = this;
+            var _this6 = this;
 
             /*
             We iterate through the subscribing functions, notifying each of them.
@@ -393,7 +391,7 @@ var DummyObject = function () {
                     subscribed = _ref3[0],
                     subscription = _ref3[1];
 
-                subscription(_this7);
+                subscription(_this6);
             });
         }
     }]);
