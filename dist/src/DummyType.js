@@ -175,7 +175,7 @@ var DummyType = function () {
             Indexing only makes sense if this object has loaded and has data.
             If it has not, then load it. The load method automatically indexes.
              */
-            if (obj.hasLoaded) {
+            if (obj.hasLoaded || obj.local) {
                 this.indexors.forEach(function (indexor, name) {
                     indexor(obj, _this.indexes.get(name));
                 });
