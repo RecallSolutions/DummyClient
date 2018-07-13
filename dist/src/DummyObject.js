@@ -229,6 +229,7 @@ var DummyObject = function () {
                 index.getClient().post(_this2.getPath(), _this2.resolve(), function (err, res, body) {
                     //Only successful if there wasn't an error.
                     if (!err) {
+                        _this2.local = false;
                         //The server may have requested a changed id.
                         if (body.id != _this2.id) {
                             _this2.type.registry.delete(_this2.id);

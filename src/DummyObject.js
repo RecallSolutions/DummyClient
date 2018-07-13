@@ -177,6 +177,7 @@ class DummyObject {
             index.getClient().post(this.getPath(), this.resolve(), (err, res, body) => {
                 //Only successful if there wasn't an error.
                 if (!err) {
+                    this.local = false;
                     //The server may have requested a changed id.
                     if (body.id != this.id) {
                         this.type.registry.delete(this.id);
