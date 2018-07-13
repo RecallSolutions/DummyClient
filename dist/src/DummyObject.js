@@ -230,7 +230,12 @@ var DummyObject = function () {
                     //Only successful if there wasn't an error.
                     if (!err) {
                         //The server may have requested a changed id.
-                        _this2.id = body.id || _this2.id;
+                        if (body.id != _this2.id) {
+                            _this2.type.registry.delete(_this2.id);
+                            _this2.type.clearObjIndices(_this2);
+                            _this2.id = body.id || _this2.id;
+                            _this2.type.registry.set(_this2.id, _this2);
+                        }
                         _this2.load().then(resolve);
                     } else {
                         reject(err);

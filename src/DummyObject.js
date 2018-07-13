@@ -178,7 +178,13 @@ class DummyObject {
                 //Only successful if there wasn't an error.
                 if (!err) {
                     //The server may have requested a changed id.
-                    this.id = body.id || this.id;
+                    if (body.id != this.id) {
+                        this.type.registry.delete(this.id);
+                        this.type.clearObjIndices(this);
+                        this.id = body.id || this.id;
+                        this.type.registry.set(this.id, this);
+
+                    }
                     this.load()
                         .then(resolve);
                 } else {
